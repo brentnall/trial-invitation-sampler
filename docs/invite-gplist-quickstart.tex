@@ -1,0 +1,163 @@
+\documentclass[a4paper]{article}
+%\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{lscape}
+\usepackage{setspace}
+\usepackage{float}
+\setlength{\hoffset}{-1in} \setlength{\voffset}{-1.57cm}
+\setlength{\oddsidemargin}{2.75cm}
+\setlength{\evensidemargin}{2.75cm}
+\setlength{\topskip}{0cm}
+\setlength{\textwidth}{16cm} \setlength{\textheight}{24.5cm}
+\setlength{\topmargin}{0cm}
+\setlength{\marginparsep}{0cm} \setlength{\marginparwidth}{0cm}
+\setlength{\headheight}{0.3cm} \setlength{\headsep}{1.23cm}
+\setlength{\footskip}{1.6cm}
+%\renewcommand{\captionfont}{\sffamily \normalsize}
+\renewcommand\refname{}
+
+\newcommand{\estse}[2]{{#1}_{(#2)}}
+\newcommand{\cithree}[3]{_{{#1}\ \!}{#2}_{\ {#3}}}
+\newcommand{\cifive}[5]{_{_{#1\ }{#2}\ \!}{#3}_{\ #4_{\ #5}}}
+
+\setcounter{secnumdepth}{2}
+
+%\bibliographystyle{chicago}
+\bibliographystyle{ama}
+%\doublespacing
+
+\title{Quick start: using the invitation algorithm}
+\author{Adam Brentnall}
+\begin{document}
+\maketitle
+Program version 2.0
+
+\section{Introduction}
+
+This document describes the basic steps needed to run the algorithm to generate invitation schedules using the demonstration site. 
+
+\section{Software file structure}
+
+The software distributed has the following files / directories in the root directory.
+\begin{itemize}
+	\item \texttt{docs} documentation (including this file)
+	\item \texttt{inputgen} code to generate input files for the invitation algorithm (R)
+	\item \texttt{prog } code to run the invitation schedule algorithm (python3)
+	\item \texttt{README.md} Readme file about the software
+\end{itemize}
+
+\section{Generating lists, overview of process}
+
+We next describe how to use the software to generate invitation lists.
+
+\begin{enumerate}
+	\item Create  one or two csv files to generate input files for the algorithm. Examples are provided in \texttt{inputget/updatefiles}. They are:
+	\begin{itemize}
+		\item GP list data (csv file)
+		\item Bookings update data (csv file; only needed if wave 2+)
+	\end{itemize}
+		Demonstration files are included with the program.
+\item Then generate the algorithm input files by running the R script in \texttt{inputgen} 
+		\item Before running the algorithm to generate the list you should consider what uptake you expect. Also you need to consider how many slots are available and what round of invitations are being planned. Once these are decided you need to let the program know, either by editing the configuration file directly in \texttt{./prog/input/runpars.ini} using a text editor and saving, or through running the program using \texttt{./prog/trial-invitation-frontend.py} rather than the command-line \texttt{./prog/trial-invitation-nogui.py} 
+	\item Run the algorithm
+	\item The stratified sample list (accounting for national opt-outs) is saved in \texttt{./prog/output/nhsd-invite-inflated.csv}. 
+\end{enumerate}
+
+\section{Detailed descriptions}
+
+\subsection{Generating input files for the algorithm (inputgen)}
+
+The algorithm needs a number of inputs in order to prioritse selection of GP/age groups, inflate the request to take into account national data opt outs, and tell the algorithm capacity and number of bookings so far in a format it can understand.
+The R script in \texttt{./inputgen} does this. To run the script one first needs to include your one or two CSV files in \texttt{./inputgen/updatefiles}
+        \begin{itemize}
+                \item GP list data (csv file)
+                \item Bookings update data (csv file)
+        \end{itemize}
+Then, how to call the R script depends on the wave of invitations, because the second wave onwards will use data on bookings to date; the first wave will not.\\
+\\ To call the R script for a first round\\ %\vspace{1em}
+\\ \texttt{Rscript trial-invitation-geninput.r <path-to-file/gplist-file.csv>} \\
+\\ To call the script for a second round one needs to append the bookings file.\\ %\vspace{1em}
+\\ \texttt{Rscript trial-invitation-geninput.r <path-to-file/gplist-file.csv> <path-to-file/update-file.csv>}\\
+
+\subsection{Updating capacity, uptake assumption and round}
+
+The algorithm uses a configuration file in \texttt{./prog/input/runpars.ini} where parameters for number of slots available, assumed overall uptake and the current wave of invitations are kept. You may edit this file directly using a text editor, or use the user interface if calling the program using \texttt{trial-invitation-frontend.py} rather than \texttt{trial-invitation-nogui.py}. If you choose to edit directly then number of slots is at the top of \texttt{./prog/input/runpars.ini}:\\ \\
+\texttt{[number\_slots] \\
+n = 1000}\\ \\
+Set this to be the number of available slots \textbf{minus the number of slots already booked but not linked to GPs already invited} (wave 2+ only).\\ \\
+
+Uptake correction: \\ \\
+\texttt{
+[uptake]\\
+upt = 1.0}\\ \\
+This adjusts the assumption for uptake overall. The assumption for uptake overall is based on a lookup table that allows it to vary by age/sex/GP. If there is evidence (eg. from the first round of invites) that uptake is not well calibrated for the current site, then this parameters lets the user change it by a constant, the same for all age/sex/GPs. For example, if uptake in the first wave was double expected, set this to be 2.0. If it was half, set it to be 0.5.
+Proportion of slots left to fill: \\ \\
+\texttt{[invitation\_target]
+btarget = 0.5}
+We used 50\% for the first round, but this might be changed with this parameter. This parameter is only active if 
+\texttt{[invitation\_round] 
+r = 0}. If \texttt{r = 1} then default percentages based on the wave are used, as defined in \texttt{config.ini} below.
+
+\subsection{Running the algorithm}
+
+To run the algorithm you can use the program 
+\begin{itemize}
+	\item \texttt{trial-invitation-nogui.py} (no graphical interface - assumes you edited \texttt{runpars.ini} above) or 
+	\item \texttt{trial-invitation-frontend.py} (graphical interface - could edit or not edit \texttt{runpars.ini} in advance. If you haven't edited it then enter the correct values as reviewed above). 
+\end{itemize}
+These are run simply by calling from python without additional arguments. eg.\\
+\\
+\texttt{> python3 trial-invitation-nogui.py}.\\
+\\ As it runs you will see a lot of output on the screen. If you see\\
+\\ \texttt{!!! Not feasible !!! -> check constraints by varying input} \\
+\\ then there has been a problem running the code and you may need to update the program contraints (next).
+
+\subsection{Program constraints}
+
+The program makes sure certain constraints are met, which are described in the technical documentation. If the program cannot meet these contraints you may relax them to get a schedule. The file which controls the contrains is in \texttt{./prog/config.ini}.
+
+\subsubsection{invbound}
+
+If \texttt{r = } in \texttt{runpars.ini} then the program will use a pre-set for the round to determine the target number of bookings (ordered by wave here). ie. It is 0.5 for rounds 1 and 2, and 1.1 for rounds 3 or 4:\\
+\\ \texttt{[invbound]\\
+b = 0.5,0.5,1.1,1.1\\} 
+
+
+\subsubsection{maxgp}
+
+This controls how many patients from a GP may be invited in any round, currently set to 50\%. \\
+\\ \texttt{[maxgp]\\
+g = 0.5}\\
+\\ If the program fails in later rounds relaxing this constraint may help. You could try chaning to eg. 0.6, 0.7, 0.8, until the program runs.
+
+\subsubsection{propmen}
+
+This is the targeted proportion of men who book (50\%). This is unlikely to ever be changed, but might be needed if uptake overall to the trial is starting to be imbalanced by sex, due to poor calibration of the uptake model. If this is the case the uptake model should be re-calibrated, but also in order to achieve balance again it may be necessary to over invite the group that is under-represented. This parameter allows this possibility.
+\\
+\\ \texttt{[propmen]\\
+e = 0.50}
+
+\subsubsection{uptakeagesex}
+
+This is the minimum proportion in each age/sex group. Unlikely to be needed to change, but to relax make the values lower\\
+\\ \texttt{[uptakeagesex] \\ d = 0.035, 0.04, 0.05, 0.06, 0.06, 0.03, 0.035, 0.04, 0.05, 0.06, 0.06, 0.03}
+
+\subsubsection{advcancer}
+
+This parameter controls how much the program shifts the booking distribution towards higher risk (likely older) people based on the primary outcome event rate. If you reduce this parameter, then it will be easier for the program to find a solution. Again, if constraints cannot be met it might be decreased in small increments until a feasible solution is found.\\
+\\ \texttt{[advcancer]\\
+cstar = 0.0003}
+
+\subsection{Troubleshooting - summary}
+
+If the program does not run, first inspect the input files (in \texttt{./prog/input}) to look for anomolies. Then consider relaxing constraints, particularly,
+\begin{enumerate}
+	\item Relax \texttt{g=0.5} by increasing in small intervals to 1.0.
+	\item Relax \texttt{cstar} by decreasing in small intervals.
+\end{enumerate}
+In general, if you have a long list of GPs then you should not have problems with constraints.
+
+
+
+
+\end{document}

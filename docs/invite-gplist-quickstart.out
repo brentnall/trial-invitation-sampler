@@ -1,0 +1,14 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Software file structure}{}% 2
+\BOOKMARK [1][-]{section.3}{Generating lists, overview of process}{}% 3
+\BOOKMARK [1][-]{section.4}{Detailed descriptions}{}% 4
+\BOOKMARK [2][-]{subsection.4.1}{Generating input files for the algorithm \(inputgen\)}{section.4}% 5
+\BOOKMARK [2][-]{subsection.4.2}{Updating capacity, uptake assumption and round}{section.4}% 6
+\BOOKMARK [2][-]{subsection.4.3}{Running the algorithm}{section.4}% 7
+\BOOKMARK [2][-]{subsection.4.4}{Program constraints}{section.4}% 8
+\BOOKMARK [3][-]{section*.1}{invbound}{subsection.4.4}% 9
+\BOOKMARK [3][-]{section*.2}{maxgp}{subsection.4.4}% 10
+\BOOKMARK [3][-]{section*.3}{propmen}{subsection.4.4}% 11
+\BOOKMARK [3][-]{section*.4}{uptakeagesex}{subsection.4.4}% 12
+\BOOKMARK [3][-]{section*.5}{advcancer}{subsection.4.4}% 13
+\BOOKMARK [2][-]{subsection.4.5}{Troubleshooting - summary}{section.4}% 14
