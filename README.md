@@ -2,16 +2,16 @@
 
 An algorithm to decide which patients to invite to join a trial.
 
-The mathematical model and approach is describe in this freely-available paper:
+The approach and mathematical model are described in this freely-available paper:
 
-Brentnall AR, Mathews C, Beare S, Ching J, Sleeth M, Sasieni P. Dynamic data-enabled stratified sampling for trial invitations with application in NHS-Galleri. Clinical Trials. 2023;0(0). doi:10.1177/17407745231167369
+Brentnall AR, Mathews C, Beare S, Ching J, Sleeth M, Sasieni P. Dynamic data-enabled stratified sampling for trial invitations with application in NHS-Galleri. Clinical Trials. 2023;0(0). [doi:10.1177/17407745231167369](https://doi.org/10.1177/17407745231167369)
 
-In brief, the code is demonstrated using a model where patients are organised into age/sex groups by GP practice
+## Overview 
+
+The main code is in these directories:
 
 - **prog**: python code for the invitation algorithm
 - **inputgen**: R code and associated demonstration data. The code generates input files for the algorithm using the demonstration data
-
-## Overview 
 
 To run the algorithm the following steps need to be done
 
